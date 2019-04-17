@@ -23,6 +23,7 @@ import logging
 import os
 import random
 import sys
+import traceback
 
 import numpy as np
 import torch
@@ -606,7 +607,9 @@ def main():
               num_labels=num_labels)
     if args.fp16:
         model.half()
+
     model.to(device)
+    logger.info("enough memory")
     if args.local_rank != -1:
         try:
             from apex.parallel import DistributedDataParallel as DDP

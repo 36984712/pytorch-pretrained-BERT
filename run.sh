@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --get-user-env
-#SBATCH --job-name="BBN_16_shot"
-#SBATCH --time=64:00:00
+#SBATCH --job-name="memory"
+#SBATCH --time=48:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
 #SBATCH --gres=gpu:1
@@ -15,4 +15,5 @@ python3 ./run_classifier_NER.py --data_dir ./BBN \
 --output_dir ./output_model \
 --do_train \
 --do_lower_case \
---num_train_epochs 1000
+--train_batch_size 10 \
+--max_seq_length 16
