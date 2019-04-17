@@ -3,3 +3,5 @@
 2019-04-18 01:56:40,279 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
 2019-04-18 02:05:18,346 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
 2019-04-18 02:06:11,290 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 02:46:15,099 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
+2019-04-18 02:47:21,242 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
