@@ -47,7 +47,11 @@ logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(messa
                     datefmt = '%m/%d/%Y %H:%M:%S',
                     level = logging.INFO)
 logger = logging.getLogger(__name__)
-
+handler = logging.FileHandler("./output/bbn_log.txt")
+handler.setFormatter(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s -   %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
