@@ -11,9 +11,8 @@
 module load python/3.6.1
 module load cuda/8.0.61
 module load cudnn/v7.0.3
-module load torch/20180301
 
-python ./examples/run_classifier_NER.py --data_dir ./BBN \
+python ./run_classifier_NER.py --data_dir ./BBN \
 --bert_model bert-base-uncased \
 --task_name bbn \
 --output_dir ../output \
