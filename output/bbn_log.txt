@@ -24,3 +24,103 @@
 2019-04-18 03:33:50,285 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
 2019-04-18 03:37:31,814 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
 2019-04-18 03:37:59,364 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
+2019-04-18 10:18:50,849 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:29:25,011 - INFO - __main__ -   enough memory
+2019-04-18 10:31:43,337 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:31:53,489 - INFO - __main__ -   enough memory
+2019-04-18 10:33:36,442 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:35:19,898 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:36:15,497 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:37:52,074 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:38:46,250 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:39:32,192 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:40:03,841 - INFO - __main__ -   ***** Running training *****
+2019-04-18 10:40:03,841 - INFO - __main__ -     Num examples = 23925
+2019-04-18 10:40:03,841 - INFO - __main__ -     Batch size = 10
+2019-04-18 10:40:03,842 - INFO - __main__ -     Num steps = 7176
+2019-04-18 10:40:41,698 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:41:11,530 - INFO - __main__ -   ***** Running training *****
+2019-04-18 10:41:11,531 - INFO - __main__ -     Num examples = 23925
+2019-04-18 10:41:11,531 - INFO - __main__ -     Batch size = 10
+2019-04-18 10:41:11,531 - INFO - __main__ -     Num steps = 7176
+2019-04-18 10:49:11,467 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:49:41,441 - INFO - __main__ -   ***** Running training *****
+2019-04-18 10:49:41,442 - INFO - __main__ -     Num examples = 23925
+2019-04-18 10:49:41,442 - INFO - __main__ -     Batch size = 10
+2019-04-18 10:49:41,442 - INFO - __main__ -     Num steps = 7176
+2019-04-18 10:52:10,319 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:52:40,999 - INFO - __main__ -   ***** Running training *****
+2019-04-18 10:52:40,999 - INFO - __main__ -     Num examples = 23925
+2019-04-18 10:52:40,999 - INFO - __main__ -     Batch size = 10
+2019-04-18 10:52:40,999 - INFO - __main__ -     Num steps = 7176
+2019-04-18 10:54:43,613 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:55:13,767 - INFO - __main__ -   ***** Running training *****
+2019-04-18 10:55:13,767 - INFO - __main__ -     Num examples = 23925
+2019-04-18 10:55:13,767 - INFO - __main__ -     Batch size = 10
+2019-04-18 10:55:13,767 - INFO - __main__ -     Num steps = 7176
+2019-04-18 10:57:00,364 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 10:57:31,004 - INFO - __main__ -   ***** Running training *****
+2019-04-18 10:57:31,004 - INFO - __main__ -     Num examples = 23925
+2019-04-18 10:57:31,005 - INFO - __main__ -     Batch size = 10
+2019-04-18 10:57:31,005 - INFO - __main__ -     Num steps = 7176
+2019-04-18 11:09:46,745 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 11:11:14,531 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 11:14:50,831 - INFO - __main__ -   ***** Running training *****
+2019-04-18 11:14:50,832 - INFO - __main__ -     Num examples = 23925
+2019-04-18 11:14:50,833 - INFO - __main__ -     Batch size = 10
+2019-04-18 11:14:50,834 - INFO - __main__ -     Num steps = 7176
+2019-04-18 11:22:16,386 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 11:23:02,391 - INFO - __main__ -   ***** Running training *****
+2019-04-18 11:23:02,392 - INFO - __main__ -     Num examples = 23925
+2019-04-18 11:23:02,393 - INFO - __main__ -     Batch size = 10
+2019-04-18 11:23:02,393 - INFO - __main__ -     Num steps = 7176
+2019-04-18 11:23:20,766 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 11:24:06,275 - INFO - __main__ -   ***** Running training *****
+2019-04-18 11:24:06,276 - INFO - __main__ -     Num examples = 23925
+2019-04-18 11:24:06,277 - INFO - __main__ -     Batch size = 10
+2019-04-18 11:24:06,278 - INFO - __main__ -     Num steps = 7176
+2019-04-18 11:48:07,854 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 11:48:55,367 - INFO - __main__ -   ***** Running training *****
+2019-04-18 11:48:55,368 - INFO - __main__ -     Num examples = 23925
+2019-04-18 11:48:55,370 - INFO - __main__ -     Batch size = 10
+2019-04-18 11:48:55,371 - INFO - __main__ -     Num steps = 7176
+2019-04-18 12:04:44,006 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 12:05:29,792 - INFO - __main__ -   ***** Running training *****
+2019-04-18 12:05:29,793 - INFO - __main__ -     Num examples = 23925
+2019-04-18 12:05:29,795 - INFO - __main__ -     Batch size = 10
+2019-04-18 12:05:29,795 - INFO - __main__ -     Num steps = 7176
+2019-04-18 12:06:57,441 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 12:07:43,741 - INFO - __main__ -   ***** Running training *****
+2019-04-18 12:07:43,742 - INFO - __main__ -     Num examples = 23925
+2019-04-18 12:07:43,743 - INFO - __main__ -     Batch size = 10
+2019-04-18 12:07:43,744 - INFO - __main__ -     Num steps = 7176
+2019-04-18 12:11:53,800 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 12:12:04,869 - INFO - __main__ -   ***** Running training *****
+2019-04-18 12:12:04,870 - INFO - __main__ -     Num examples = 23925
+2019-04-18 12:12:04,870 - INFO - __main__ -     Batch size = 10
+2019-04-18 12:12:04,870 - INFO - __main__ -     Num steps = 7176
+2019-04-18 14:03:48,699 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 14:04:36,128 - INFO - __main__ -   ***** Running training *****
+2019-04-18 14:04:36,129 - INFO - __main__ -     Num examples = 23925
+2019-04-18 14:04:36,130 - INFO - __main__ -     Batch size = 10
+2019-04-18 14:04:36,131 - INFO - __main__ -     Num steps = 7176
+2019-04-18 14:06:42,707 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 14:06:53,716 - INFO - __main__ -   ***** Running training *****
+2019-04-18 14:06:53,716 - INFO - __main__ -     Num examples = 23925
+2019-04-18 14:06:53,717 - INFO - __main__ -     Batch size = 10
+2019-04-18 14:06:53,717 - INFO - __main__ -     Num steps = 7176
+2019-04-18 14:07:08,954 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 14:07:56,034 - INFO - __main__ -   ***** Running training *****
+2019-04-18 14:07:56,035 - INFO - __main__ -     Num examples = 23925
+2019-04-18 14:07:56,036 - INFO - __main__ -     Batch size = 10
+2019-04-18 14:07:56,038 - INFO - __main__ -     Num steps = 7176
+2019-04-18 14:15:05,839 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 14:18:41,878 - INFO - __main__ -   ***** Running training *****
+2019-04-18 14:18:41,879 - INFO - __main__ -     Num examples = 23925
+2019-04-18 14:18:41,881 - INFO - __main__ -     Batch size = 10
+2019-04-18 14:18:41,882 - INFO - __main__ -     Num steps = 7176
+2019-04-18 14:21:23,851 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-18 14:21:57,058 - INFO - __main__ -   ***** Running training *****
+2019-04-18 14:21:57,058 - INFO - __main__ -     Num examples = 23925
+2019-04-18 14:21:57,058 - INFO - __main__ -     Batch size = 10
+2019-04-18 14:21:57,058 - INFO - __main__ -     Num steps = 7176

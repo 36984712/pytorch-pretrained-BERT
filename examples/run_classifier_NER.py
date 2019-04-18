@@ -23,6 +23,8 @@ import logging
 import os
 import random
 import sys
+import io
+import json
 
 sys.path.append("..")
 sys.path.append("../pytorch_pretrained_bert")
@@ -77,11 +79,11 @@ class InputExample(object):
 class InputFeatures(object):
     """A single set of features of data."""
 
-    def __init__(self, input_ids, input_mask, segment_ids, label_id):
+    def __init__(self, input_ids, input_mask, segment_ids, label_ids):
         self.input_ids = input_ids
         self.input_mask = input_mask
         self.segment_ids = segment_ids
-        self.label_id = label_id
+        self.label_ids = label_ids
 
 
 class DataProcessor(object):
@@ -199,14 +201,14 @@ class BBNNerProcessor(BBNDataProcessor):
 
 
     def get_labels(self, data_dir):
-        return list(self._read_data(os.path.join(data_dir, "data_train.txt"))[1]) \
+        return list(set(list(self._read_data(os.path.join(data_dir, "data_train.txt"))[1]) \
                + list(self._read_data(os.path.join(data_dir, "data_val_eval.txt"))[1]) \
                + list(self._read_data(os.path.join(data_dir, "data_test_eval.txt"))[1]) \
-               + ["[CLS]","[SEP]","X"]
+               + ["[CLS]","[SEP]","X"]))
 
-    def get_labels2idx(self):
+    def get_labels2idx(self, data_dir):
         label_map = {}
-        for (i, label) in enumerate(self.get_labels(), 1):
+        for (i, label) in enumerate(self.get_labels(data_dir), 1):
             label_map[label] = i
         return label_map
     def _create_example(self, lines):
@@ -388,7 +390,7 @@ def compute_metrics(task_name, preds, labels):
 
 def process_data(tokenizer, processor, data_dir ,max_seq_length):
 
-    label2idx = processor.get_labels2idx()
+    label2idx = processor.get_labels2idx(data_dir)
     # train data into tensor
     train_exampels = processor.get_train_examples(data_dir)
     train_features, train_sample_map = convert_examples_to_features(tokenizer, train_exampels, label2idx, max_seq_length)
@@ -609,7 +611,13 @@ def main():
               num_labels=num_labels)
     if args.fp16:
         model.half()
-    model.to(device)
+
+    try:
+        model.to(device)
+    except Exception:
+        logging.warning("toGPU failed, failed msg:" + traceback.format_exc())
+        raise Exception
+    
     if args.local_rank != -1:
         try:
             from apex.parallel import DistributedDataParallel as DDP
@@ -652,23 +660,15 @@ def main():
     global_step = 0
     nb_tr_steps = 0
     tr_loss = 0
+    #prepare Data
+    process_data(tokenizer, processor, args.data_dir, args.max_seq_length)
     if args.do_train:
-        train_features = convert_examples_to_features(
-            train_examples, label_list, args.max_seq_length, tokenizer, output_mode)[0]
         logger.info("***** Running training *****")
         logger.info("  Num examples = %d", len(train_examples))
         logger.info("  Batch size = %d", args.train_batch_size)
         logger.info("  Num steps = %d", num_train_optimization_steps)
-        all_input_ids = torch.tensor([f.input_ids for f in train_features], dtype=torch.long)
-        all_input_mask = torch.tensor([f.input_mask for f in train_features], dtype=torch.long)
-        all_segment_ids = torch.tensor([f.segment_ids for f in train_features], dtype=torch.long)
 
-        if output_mode == "classification":
-            all_label_ids = torch.tensor([f.label_id for f in train_features], dtype=torch.long)
-        elif output_mode == "regression":
-            all_label_ids = torch.tensor([f.label_id for f in train_features], dtype=torch.float)
-
-        train_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
+        train_data = torch.load(os.path.join(args.data_dir, "train.pt"))
         if args.local_rank == -1:
             train_sampler = RandomSampler(train_data)
         else:
@@ -684,14 +684,7 @@ def main():
                 input_ids, input_mask, segment_ids, label_ids = batch
 
                 # define a new function to compute loss values for both output_modes
-                logits = model(input_ids, segment_ids, input_mask, labels=None)
-
-                if output_mode == "classification":
-                    loss_fct = CrossEntropyLoss()
-                    loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
-                elif output_mode == "regression":
-                    loss_fct = MSELoss()
-                    loss = loss_fct(logits.view(-1), label_ids.view(-1))
+                loss = model(input_ids, segment_ids, input_mask, label_ids)
 
                 if n_gpu > 1:
                     loss = loss.mean() # mean() to average on multi-gpu.
