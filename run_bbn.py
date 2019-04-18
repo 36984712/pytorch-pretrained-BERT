@@ -617,7 +617,6 @@ def main():
         model.to(device)
     except Exception:
         logging.warning("toGPU failed, failed msg:" + traceback.format_exc())
-        raise Exception
     
     if args.local_rank != -1:
         try:
