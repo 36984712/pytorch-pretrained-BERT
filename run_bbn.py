@@ -50,11 +50,6 @@ logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(messa
                     datefmt = '%m/%d/%Y %H:%M:%S',
                     level = logging.INFO)
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler("./output/bbn_log.txt")
-handler.setFormatter(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s -   %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
 
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
@@ -531,6 +526,13 @@ def main():
     parser.add_argument('--server_port', type=str, default='', help="Can be used for distant debugging.")
     args = parser.parse_args()
 
+    # log setting
+    handler = logging.FileHandler(os.path.join(args.output_dir, "log.txt"))
+    handler.setFormatter(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s -   %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     if args.server_ip and args.server_port:
         # Distant debugging - see https://code.visualstudio.com/docs/python/debugging#_attach-to-a-local-script
         import ptvsd
@@ -677,7 +679,7 @@ def main():
         train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
 
         model.train()
-        for _ in trange(int(args.num_train_epochs), desc="Epoch"):
+        for _ in range(int(args.num_train_epochs), desc="Epoch"):
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
             for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
@@ -729,21 +731,12 @@ def main():
 
     if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
         eval_examples = processor.get_dev_examples(args.data_dir)
-        eval_features = convert_examples_to_features(
-            eval_examples, label_list, args.max_seq_length, tokenizer, output_mode)[0]
+
         logger.info("***** Running evaluation *****")
         logger.info("  Num examples = %d", len(eval_examples))
         logger.info("  Batch size = %d", args.eval_batch_size)
-        all_input_ids = torch.tensor([f.input_ids for f in eval_features], dtype=torch.long)
-        all_input_mask = torch.tensor([f.input_mask for f in eval_features], dtype=torch.long)
-        all_segment_ids = torch.tensor([f.segment_ids for f in eval_features], dtype=torch.long)
 
-        if output_mode == "classification":
-            all_label_ids = torch.tensor([f.label_id for f in eval_features], dtype=torch.long)
-        elif output_mode == "regression":
-            all_label_ids = torch.tensor([f.label_id for f in eval_features], dtype=torch.float)
-
-        eval_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
+        eval_data = torch.load(os.path.join(data_dir, "dev.pt"))
         # Run prediction for full data
         eval_sampler = SequentialSampler(eval_data)
         eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
