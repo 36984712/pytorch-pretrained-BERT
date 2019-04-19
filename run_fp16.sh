@@ -10,6 +10,7 @@
 module load pytorch/1.0.0-py37-cuda92
 
 python3 ./run_bbn.py --data_dir ./BBN \
+--log_dir ./output_log/fp16 \
 --bert_model bert-base-uncased \
 --task_name bbn \
 --output_dir ./output_model/fp16 \

@@ -1112,7 +1112,7 @@ class BertForTokenClassification(BertPreTrainedModel):
         sequence_output, _ = self.bert(input_ids, token_type_ids, attention_mask, output_all_encoded_layers=False)
         sequence_output = self.dropout(sequence_output)
         logits = self.classifier(sequence_output)
-        print(logits.view(-1, self.num_labels))
+        # print(logits.view(-1, self.num_labels))
 
         if labels is not None:
             loss_fct = CrossEntropyLoss()

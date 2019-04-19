@@ -443,6 +443,11 @@ def main():
                         type=str,
                         required=True,
                         help="The input data dir. Should contain the .tsv files (or other data files) for the task.")
+    parser.add_argument("--log_dir",
+                        default=None,
+                        type=str,
+                        required=True,
+                        help="The log dir. Should contain the .txt file (or other data file) for the task.")
     parser.add_argument("--bert_model", default=None, type=str, required=True,
                         help="Bert pre-trained model selected in the list: bert-base-uncased, "
                         "bert-large-uncased, bert-base-cased, bert-large-cased, bert-base-multilingual-uncased, "
@@ -527,7 +532,7 @@ def main():
     args = parser.parse_args()
 
     # log setting
-    handler = logging.FileHandler(os.path.join(args.output_dir, "log.txt"))
+    handler = logging.FileHandler(os.path.join(args.log_dir, "log.txt"))
     handler.setFormatter(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s -   %(message)s')
     handler.setFormatter(formatter)
@@ -679,10 +684,11 @@ def main():
         train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
 
         model.train()
-        for _ in range(int(args.num_train_epochs), desc="Epoch"):
+        for _ in range(int(args.num_train_epochs)):
             tr_loss = 0
+            last_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
-            for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
+            for step, batch in enumerate(train_dataloader):
                 batch = tuple(t.to(device) for t in batch)
                 input_ids, input_mask, segment_ids, label_ids = batch
 
@@ -712,6 +718,14 @@ def main():
                     optimizer.step()
                     optimizer.zero_grad()
                     global_step += 1
+                if abs(loss.item() - last_loss) <= 5e-10:
+                    break
+                # if abs(loss.item() - last_loss) != 0:
+                #     print("iterate fine")
+                #     print("step: " + str(step))
+                #     print(abs(loss.item() - last_loss))
+                last_loss = loss.item()
+
 
         # Save a trained model and the associated configuration
         model_to_save = model.module if hasattr(model, 'module') else model  # Only save the model it-self
@@ -730,13 +744,21 @@ def main():
     model.to(device)
 
     if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
+        #load fine-tuned model
+        output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
+        output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
+        config = BertConfig(output_config_file)
+        model = BertForTokenClassification(config, num_labels=num_labels)
+        model.load_state_dict(torch.load(output_model_file))
+        model.to(device) 
+
         eval_examples = processor.get_dev_examples(args.data_dir)
 
         logger.info("***** Running evaluation *****")
         logger.info("  Num examples = %d", len(eval_examples))
         logger.info("  Batch size = %d", args.eval_batch_size)
 
-        eval_data = torch.load(os.path.join(data_dir, "dev.pt"))
+        eval_data = torch.load(os.path.join(args.data_dir, "dev.pt"))
         # Run prediction for full data
         eval_sampler = SequentialSampler(eval_data)
         eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
@@ -746,7 +768,7 @@ def main():
         nb_eval_steps = 0
         preds = []
 
-        for input_ids, input_mask, segment_ids, label_ids in tqdm(eval_dataloader, desc="Evaluating"):
+        for input_ids, input_mask, segment_ids, label_ids in eval_dataloader:
             input_ids = input_ids.to(device)
             input_mask = input_mask.to(device)
             segment_ids = segment_ids.to(device)
@@ -822,7 +844,7 @@ def main():
             nb_eval_steps = 0
             preds = []
 
-            for input_ids, input_mask, segment_ids, label_ids in tqdm(eval_dataloader, desc="Evaluating"):
+            for input_ids, input_mask, segment_ids, label_ids in eval_dataloader:
                 input_ids = input_ids.to(device)
                 input_mask = input_mask.to(device)
                 segment_ids = segment_ids.to(device)

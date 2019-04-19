@@ -12,7 +12,8 @@ module load pytorch/1.0.0-py37-cuda92
 python3 ./run_bbn.py --data_dir ./BBN \
 --bert_model bert-base-uncased \
 --task_name bbn \
---output_dir ./output_model_t72 \
+--output_dir ./output_model/t72 \
+--log_dir ./output_log/t72 \
 --do_train \
 --do_lower_case \
 --train_batch_size 32 \
