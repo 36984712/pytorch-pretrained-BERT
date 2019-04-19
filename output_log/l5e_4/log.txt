@@ -1,0 +1,8 @@
+2019-04-20 01:09:08,878 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
+2019-04-20 01:09:45,337 - INFO - __main__ -   ***** Running training *****
+2019-04-20 01:09:45,337 - INFO - __main__ -     Num examples = 23925
+2019-04-20 01:09:45,338 - INFO - __main__ -     Batch size = 32
+2019-04-20 01:09:45,338 - INFO - __main__ -     Num steps = 37350
+2019-04-20 03:41:04,271 - INFO - __main__ -   ***** Running evaluation *****
+2019-04-20 03:41:04,271 - INFO - __main__ -     Num examples = 2031
+2019-04-20 03:41:04,272 - INFO - __main__ -     Batch size = 8
