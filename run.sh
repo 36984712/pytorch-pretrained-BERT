@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --get-user-env
-#SBATCH --job-name="memory"
+#SBATCH --job-name="cpu bbn"
 #SBATCH --time=48:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
@@ -16,4 +16,6 @@ python3 ./run_bbn.py --data_dir ./BBN \
 --do_train \
 --do_lower_case \
 --train_batch_size 10 \
---max_seq_length 16
+--max_seq_length 16 \
+--num_train_epochs 500 \
+--no_cuda
