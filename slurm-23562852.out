@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "./run_bbn.py", line 863, in <module>
+    main()
+  File "./run_bbn.py", line 530, in main
+    handler = logging.FileHandler(os.path.join(args.output_dir, "log.txt"))
+  File "/apps/python/3.7.2/lib/python3.7/logging/__init__.py", line 1092, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/apps/python/3.7.2/lib/python3.7/logging/__init__.py", line 1121, in _open
+    return open(self.baseFilename, self.mode, encoding=self.encoding)
+FileNotFoundError: [Errno 2] No such file or directory: '/home/wen062/code/pytorch-pretrained-BERT/output_model_t48/log.txt'
