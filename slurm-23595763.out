@@ -1,0 +1,86 @@
+04/21/2019 11:15:37 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
+04/21/2019 11:15:39 - INFO - pytorch_pretrained_bert.tokenization -   loading vocabulary file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-vocab.txt from cache at /home/wen062/.pytorch_pretrained_bert/26bc1ad6c0ac742e9b52263248f6d0f00068293b33709fae12320c0e35ccfbbb.542ce4285a40d23a559526243235df47c5f75c197f04f37d1a0c124c32c9a084
+04/21/2019 11:15:41 - INFO - pytorch_pretrained_bert.modeling -   loading archive file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased.tar.gz from cache at /home/wen062/.pytorch_pretrained_bert/distributed_-1/9c41111e2de84547a463fd39217199738d1e3deb72d4fec4399e6e241983c6f0.ae3cef932725ca7a30cdcb93fc6e09150a55e2a130ec7af63975a16c153ae2ba
+04/21/2019 11:15:41 - INFO - pytorch_pretrained_bert.modeling -   extracting archive file /home/wen062/.pytorch_pretrained_bert/distributed_-1/9c41111e2de84547a463fd39217199738d1e3deb72d4fec4399e6e241983c6f0.ae3cef932725ca7a30cdcb93fc6e09150a55e2a130ec7af63975a16c153ae2ba to temp dir /tmp/wen062.23595763/tmp81_d3uqo
+04/21/2019 11:15:45 - INFO - pytorch_pretrained_bert.modeling -   Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "type_vocab_size": 2,
+  "vocab_size": 30522
+}
+
+04/21/2019 11:15:47 - INFO - pytorch_pretrained_bert.modeling -   Weights of BertForTokenClassification not initialized from pretrained model: ['classifier.weight', 'classifier.bias']
+04/21/2019 11:15:47 - INFO - pytorch_pretrained_bert.modeling -   Weights from pretrained model not used in BertForTokenClassification: ['cls.predictions.bias', 'cls.predictions.transform.dense.weight', 'cls.predictions.transform.dense.bias', 'cls.predictions.decoder.weight', 'cls.seq_relationship.weight', 'cls.seq_relationship.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.LayerNorm.bias']
+04/21/2019 11:16:13 - INFO - __main__ -   ***** Running training *****
+04/21/2019 11:16:13 - INFO - __main__ -     Num examples = 23925
+04/21/2019 11:16:13 - INFO - __main__ -     Batch size = 32
+04/21/2019 11:16:13 - INFO - __main__ -     Num steps = 37350
+/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/parallel/_functions.py:61: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+04/21/2019 13:44:11 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:11 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:11 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:12 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:12 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:12 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:12 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:12 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:13 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:13 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:13 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:13 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:14 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:14 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:14 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:14 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:15 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:15 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:15 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:15 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:15 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:16 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:16 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:16 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:16 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:17 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:17 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:17 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:18 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:18 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:18 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:18 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:19 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:19 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:19 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:19 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:19 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:20 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:20 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:20 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:20 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:21 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:21 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:21 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:22 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:22 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:22 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:22 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:23 - WARNING - pytorch_pretrained_bert.optimization -   Training beyond specified 't_total' steps with schedule 'warmup_linear'. Learning rate set to 0.0. Please set 't_total' of BertAdam correctly.
+04/21/2019 13:44:28 - INFO - __main__ -   ***** Running evaluation *****
+04/21/2019 13:44:28 - INFO - __main__ -     Num examples = 2031
+04/21/2019 13:44:28 - INFO - __main__ -     Batch size = 8
+/flush3/hli001/installs/pytorch/pytorch-1.0.0-git/aten/src/THCUNN/ClassNLLCriterion.cu:105: void cunn_ClassNLLCriterion_updateOutput_kernel(Dtype *, Dtype *, Dtype *, long *, Dtype *, int, int, int, int, long) [with Dtype = float, Acctype = float]: block: [0,0,0], thread: [20,0,0] Assertion `t >= 0 && t < n_classes` failed.
+/flush3/hli001/installs/pytorch/pytorch-1.0.0-git/aten/src/THCUNN/ClassNLLCriterion.cu:105: void cunn_ClassNLLCriterion_updateOutput_kernel(Dtype *, Dtype *, Dtype *, long *, Dtype *, int, int, int, int, long) [with Dtype = float, Acctype = float]: block: [0,0,0], thread: [28,0,0] Assertion `t >= 0 && t < n_classes` failed.
+Traceback (most recent call last):
+  File "./run_bbn.py", line 885, in <module>
+    main()
+  File "./run_bbn.py", line 788, in main
+    eval_loss += tmp_eval_loss.mean().item()
+RuntimeError: CUDA error: device-side assert triggered

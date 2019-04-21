@@ -1,0 +1,18 @@
+2019-04-21 00:19:12,472 - INFO - __main__ -   device: cuda n_gpu: 1, distributed training: False, 16-bits training: False
+2019-04-21 00:19:53,635 - INFO - __main__ -   ***** Running training *****
+2019-04-21 00:19:53,636 - INFO - __main__ -     Num examples = 23925
+2019-04-21 00:19:53,636 - INFO - __main__ -     Batch size = 32
+2019-04-21 00:19:53,636 - INFO - __main__ -     Num steps = 37350
+2019-04-21 00:22:58,301 - INFO - __main__ -   device: cuda n_gpu: 1, distributed training: False, 16-bits training: False
+2019-04-21 00:23:35,595 - INFO - __main__ -   ***** Running training *****
+2019-04-21 00:23:35,595 - INFO - __main__ -     Num examples = 23925
+2019-04-21 00:23:35,595 - INFO - __main__ -     Batch size = 32
+2019-04-21 00:23:35,595 - INFO - __main__ -     Num steps = 37350
+2019-04-21 01:43:32,793 - INFO - __main__ -   device: cuda n_gpu: 1, distributed training: False, 16-bits training: False
+2019-04-21 01:44:12,643 - INFO - __main__ -   ***** Running training *****
+2019-04-21 01:44:12,643 - INFO - __main__ -     Num examples = 23925
+2019-04-21 01:44:12,643 - INFO - __main__ -     Batch size = 32
+2019-04-21 01:44:12,643 - INFO - __main__ -     Num steps = 37350
+2019-04-21 06:20:49,195 - INFO - __main__ -   ***** Running evaluation *****
+2019-04-21 06:20:49,195 - INFO - __main__ -     Num examples = 2031
+2019-04-21 06:20:49,195 - INFO - __main__ -     Batch size = 8

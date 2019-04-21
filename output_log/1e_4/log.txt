@@ -1,0 +1,23 @@
+2019-04-21 08:05:58,522 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
+2019-04-21 08:06:09,606 - WARNING - __main__ -   toGPU failed, failed msg:Traceback (most recent call last):
+  File "../run_bbn.py", line 624, in main
+    model.to(device)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 381, in to
+    return self._apply(convert)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 187, in _apply
+    module._apply(fn)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 187, in _apply
+    module._apply(fn)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 187, in _apply
+    module._apply(fn)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 193, in _apply
+    param.data = fn(param.data)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 379, in convert
+    return t.to(device, dtype if t.is_floating_point() else None, non_blocking)
+RuntimeError: CUDA error: out of memory
+
+2019-04-21 13:46:01,686 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
+2019-04-21 13:46:38,389 - INFO - __main__ -   ***** Running training *****
+2019-04-21 13:46:38,389 - INFO - __main__ -     Num examples = 23925
+2019-04-21 13:46:38,390 - INFO - __main__ -     Batch size = 32
+2019-04-21 13:46:38,390 - INFO - __main__ -     Num steps = 149400
