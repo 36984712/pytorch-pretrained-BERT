@@ -1,4 +1,3 @@
-
 # Copyright 2018 The Google AI Language Team Authors and The HuggingFace Inc. team.
 # Copyright (c) 2018, NVIDIA CORPORATION.  All rights reserved.
 #
@@ -17,6 +16,18 @@
 
 from __future__ import absolute_import, division, print_function
 
+from pytorch_pretrained_bert.optimization import BertAdam, warmup_linear
+from pytorch_pretrained_bert.tokenization import BertTokenizer
+from pytorch_pretrained_bert.modeling import BertForTokenClassification, BertConfig, WEIGHTS_NAME, CONFIG_NAME
+from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE
+from sklearn.metrics import matthews_corrcoef, f1_score
+from scipy.stats import pearsonr, spearmanr
+from torch.nn import CrossEntropyLoss, MSELoss
+from torch.utils.data.distributed import DistributedSampler
+from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
+                              TensorDataset)
+import torch
+import numpy as np
 import argparse
 import csv
 import logging
@@ -30,26 +41,13 @@ import traceback
 sys.path.append("..")
 sys.path.append("../pytorch_pretrained_bert")
 
-import numpy as np
-import torch
-from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
-                              TensorDataset)
-from torch.utils.data.distributed import DistributedSampler
-from tqdm import tqdm, trange
 
-from torch.nn import CrossEntropyLoss, MSELoss
-from scipy.stats import pearsonr, spearmanr
-from sklearn.metrics import matthews_corrcoef, f1_score
-
-from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE
-from pytorch_pretrained_bert.modeling import BertForTokenClassification, BertConfig, WEIGHTS_NAME, CONFIG_NAME
-from pytorch_pretrained_bert.tokenization import BertTokenizer
-from pytorch_pretrained_bert.optimization import BertAdam, warmup_linear
-
-logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
-                    datefmt = '%m/%d/%Y %H:%M:%S',
-                    level = logging.INFO)
+logging.basicConfig(
+    format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+    datefmt='%m/%d/%Y %H:%M:%S',
+    level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
@@ -109,6 +107,7 @@ class DataProcessor(object):
                 lines.append(line)
             return lines
 
+
 class CoNLLDataProcessor(object):
     """Base class for data converters for sequence classification data sets."""
 
@@ -150,6 +149,7 @@ class CoNLLDataProcessor(object):
                 labels.append(label)
             return lines
 
+
 class BBNDataProcessor(CoNLLDataProcessor):
     @classmethod
     def _read_data(cls, input_file):
@@ -182,31 +182,28 @@ class BBNDataProcessor(CoNLLDataProcessor):
 class BBNNerProcessor(BBNDataProcessor):
     def get_train_examples(self, data_dir):
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "data_train.txt"))[0]
-        )
+            self._read_data(os.path.join(data_dir, "data_train.txt"))[0])
 
     def get_dev_examples(self, data_dir):
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "data_val_eval.txt"))[0]
-        )
+            self._read_data(os.path.join(data_dir, "data_val_eval.txt"))[0])
 
-    def get_test_examples(self,data_dir):
+    def get_test_examples(self, data_dir):
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "data_test_eval.txt"))[0]
-        )
-
+            self._read_data(os.path.join(data_dir, "data_test_eval.txt"))[0])
 
     def get_labels(self, data_dir):
-        return list(set(list(self._read_data(os.path.join(data_dir, "data_train.txt"))[1]) \
-               + list(self._read_data(os.path.join(data_dir, "data_val_eval.txt"))[1]) \
-               + list(self._read_data(os.path.join(data_dir, "data_test_eval.txt"))[1]) \
-               + ["[CLS]","[SEP]","X"]))
+        return list(set(list(self._read_data(os.path.join(data_dir, "data_train.txt"))[1])
+                        + list(self._read_data(os.path.join(data_dir, "data_val_eval.txt"))[1])
+                        + list(self._read_data(os.path.join(data_dir, "data_test_eval.txt"))[1])
+                        + ["[CLS]", "[SEP]", "X"]))
 
     def get_labels2idx(self, data_dir):
         label_map = {}
         for (i, label) in enumerate(self.get_labels(data_dir), 1):
             label_map[label] = i
         return label_map
+
     def _create_example(self, lines):
         examples = []
         for (i, line) in enumerate(lines):
@@ -214,42 +211,50 @@ class BBNNerProcessor(BBNDataProcessor):
             examples.append(InputExample(i, text_a=line[1], label=line[0]))
         return examples
 
+
 class CoNLLNerProcessor(CoNLLDataProcessor):
     def get_train_examples(self, data_dir):
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "train.txt"))
-        )
+            self._read_data(os.path.join(data_dir, "train.txt")))
 
     def get_dev_examples(self, data_dir):
         return self._create_example(
-            self._read_data(os.path.join(data_dir, "dev.txt"))
-        )
+            self._read_data(os.path.join(data_dir, "dev.txt")))
 
-    def get_test_examples(self,data_dir):
+    def get_test_examples(self, data_dir):
         return self._create_example(
             self._read_data(os.path.join(data_dir, "test.txt")))
 
-
     def get_labels(self):
-        return ["B-MISC", "I-MISC", "O", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC","X", "I-LOC", "[CLS]","[SEP]"]
+        return [
+            "B-MISC", "I-MISC", "O", "B-PER", "I-PER", "B-ORG", "I-ORG",
+            "B-LOC", "X", "I-LOC", "[CLS]", "[SEP]"
+        ]
 
     def get_labels2idx(self):
         label_map = {}
         for (i, label) in enumerate(self.get_labels(), 1):
             label_map[label] = i
         return label_map
+
     def _create_example(self, lines):
         examples = []
         for (i, line) in enumerate(lines):
             examples.append(InputExample(i, text_a=line[1], label=line[0]))
         return examples
 
-def convert_examples_to_features(tokenizer, examples, label2idx, max_seq_length):
+
+def convert_examples_to_features(tokenizer, examples, label2idx,
+                                 max_seq_length):
     features = []
-    sample_map = {} # the sample map is to collect the index of the labels in every sequence
+    sample_map = {
+    }  # the sample map is to collect the index of the labels in every sequence
     for ex_idx, example in enumerate(examples):
-        features.append(generate_features(tokenizer, example.text_a, example.label, max_seq_length, label2idx, ex_idx, sample_map))
+        features.append(
+            generate_features(tokenizer, example.text_a, example.label,
+                              max_seq_length, label2idx, ex_idx, sample_map))
     return features, sample_map
+
 
 def _truncate_seq(tokens, max_length):
     if len(tokens) > max_length:
@@ -258,7 +263,9 @@ def _truncate_seq(tokens, max_length):
     else:
         return tokens
 
-def generate_features(tokenizer, text_tokens_list, label_tokens_list, max_length, label2idx, ex_idx, sample_map):
+
+def generate_features(tokenizer, text_tokens_list, label_tokens_list,
+                      max_length, label2idx, ex_idx, sample_map):
 
     text_tokens = []
     label_tokens = []
@@ -308,8 +315,8 @@ def generate_features(tokenizer, text_tokens_list, label_tokens_list, max_length
     label_ids = []
 
     for label_token in ["[CLS]"] + label_tokens + ["[SEP]"]:
-        if label2idx.get(label_token) == None:
-            print (label_token)
+        if label2idx.get(label_token) is None:
+            print(label_token)
         label_ids.append(label2idx.get(label_token))
 
     assert len(input_ids) == len(label_ids)
@@ -328,7 +335,9 @@ def generate_features(tokenizer, text_tokens_list, label_tokens_list, max_length
 
     for token_idx, input_id in enumerate(input_ids):
         label_id = label_ids[token_idx]
-        if label_id == 0 or label_id == label2idx.get("X") or label_id == label2idx.get("[CLS]") or label_id == label2idx.get("[SEP]"):
+        if label_id == 0 or label_id == label2idx.get(
+                "X") or label_id == label2idx.get(
+                    "[CLS]") or label_id == label2idx.get("[SEP]"):
             continue
         line_idx = ex_idx
         if label_id in sample_map:
@@ -348,9 +357,10 @@ def generate_features(tokenizer, text_tokens_list, label_tokens_list, max_length
     assert len(segment_ids) == max_length
 
     return InputFeatures(input_ids=input_ids,
-                      input_mask=input_mask,
-                      segment_ids=segment_ids,
-                      label_ids=label_ids)
+                         input_mask=input_mask,
+                         segment_ids=segment_ids,
+                         label_ids=label_ids)
+
 
 def simple_accuracy(preds, labels):
     return (preds == labels).mean()
@@ -384,43 +394,61 @@ def compute_metrics(task_name, preds, labels):
     else:
         raise KeyError(task_name)
 
-def process_data(tokenizer, processor, data_dir ,max_seq_length):
+
+def process_data(tokenizer, processor, data_dir, max_seq_length):
 
     label2idx = processor.get_labels2idx(data_dir)
     # train data into tensor
     train_exampels = processor.get_train_examples(data_dir)
-    train_features, train_sample_map = convert_examples_to_features(tokenizer, train_exampels, label2idx, max_seq_length)
+    train_features, train_sample_map = convert_examples_to_features(
+        tokenizer, train_exampels, label2idx, max_seq_length)
 
-    train_input_ids = torch.tensor([f.input_ids for f in train_features], dtype=torch.long)
-    train_input_mask = torch.tensor([f.input_mask for f in train_features], dtype=torch.long)
-    train_segment_ids = torch.tensor([f.segment_ids for f in train_features], dtype=torch.long)
-    train_label_ids = torch.tensor([f.label_ids for f in train_features], dtype=torch.long)
+    train_input_ids = torch.tensor([f.input_ids for f in train_features],
+                                   dtype=torch.long)
+    train_input_mask = torch.tensor([f.input_mask for f in train_features],
+                                    dtype=torch.long)
+    train_segment_ids = torch.tensor([f.segment_ids for f in train_features],
+                                     dtype=torch.long)
+    train_label_ids = torch.tensor([f.label_ids for f in train_features],
+                                   dtype=torch.long)
 
-    train_data = TensorDataset(train_input_ids, train_input_mask, train_segment_ids, train_label_ids)
+    train_data = TensorDataset(train_input_ids, train_input_mask,
+                               train_segment_ids, train_label_ids)
 
     # dev data into tensor
     dev_exampels = processor.get_dev_examples(data_dir)
-    dev_features, dev_sample_map = convert_examples_to_features(tokenizer, dev_exampels, label2idx, max_seq_length)
+    dev_features, dev_sample_map = convert_examples_to_features(
+        tokenizer, dev_exampels, label2idx, max_seq_length)
 
-    dev_input_ids = torch.tensor([f.input_ids for f in dev_features], dtype=torch.long)
-    dev_input_mask = torch.tensor([f.input_mask for f in dev_features], dtype=torch.long)
-    dev_segment_ids = torch.tensor([f.segment_ids for f in dev_features], dtype=torch.long)
-    dev_label_ids = torch.tensor([f.label_ids for f in dev_features], dtype=torch.long)
+    dev_input_ids = torch.tensor([f.input_ids for f in dev_features],
+                                 dtype=torch.long)
+    dev_input_mask = torch.tensor([f.input_mask for f in dev_features],
+                                  dtype=torch.long)
+    dev_segment_ids = torch.tensor([f.segment_ids for f in dev_features],
+                                   dtype=torch.long)
+    dev_label_ids = torch.tensor([f.label_ids for f in dev_features],
+                                 dtype=torch.long)
 
-    dev_data = TensorDataset(dev_input_ids, dev_input_mask, dev_segment_ids, dev_label_ids)
-
+    dev_data = TensorDataset(dev_input_ids, dev_input_mask, dev_segment_ids,
+                             dev_label_ids)
 
     # test data into tensor
 
     test_exampels = processor.get_test_examples(data_dir)
-    test_features, test_sample_map = convert_examples_to_features(tokenizer, test_exampels, label2idx, max_seq_length)
+    test_features, test_sample_map = convert_examples_to_features(
+        tokenizer, test_exampels, label2idx, max_seq_length)
 
-    test_input_ids = torch.tensor([f.input_ids for f in test_features], dtype=torch.long)
-    test_input_mask = torch.tensor([f.input_mask for f in test_features], dtype=torch.long)
-    test_segment_ids = torch.tensor([f.segment_ids for f in test_features], dtype=torch.long)
-    test_label_ids = torch.tensor([f.label_ids for f in test_features], dtype=torch.long)
+    test_input_ids = torch.tensor([f.input_ids for f in test_features],
+                                  dtype=torch.long)
+    test_input_mask = torch.tensor([f.input_mask for f in test_features],
+                                   dtype=torch.long)
+    test_segment_ids = torch.tensor([f.segment_ids for f in test_features],
+                                    dtype=torch.long)
+    test_label_ids = torch.tensor([f.label_ids for f in test_features],
+                                  dtype=torch.long)
 
-    test_data = TensorDataset(test_input_ids, test_input_mask, test_segment_ids, test_label_ids)
+    test_data = TensorDataset(test_input_ids, test_input_mask,
+                              test_segment_ids, test_label_ids)
 
     torch.save(train_data, os.path.join(data_dir, "train.pt"))
     torch.save(dev_data, os.path.join(data_dir, "dev.pt"))
@@ -434,55 +462,71 @@ def process_data(tokenizer, processor, data_dir ,max_seq_length):
     json.dump(dev_sample_map, dev_fp)
     json.dump(test_sample_map, test_fp)
 
+    return train_label_ids, dev_label_ids, test_label_ids
+
+
 def main():
     parser = argparse.ArgumentParser()
 
-    ## Required parameters
-    parser.add_argument("--data_dir",
-                        default=None,
-                        type=str,
-                        required=True,
-                        help="The input data dir. Should contain the .tsv files (or other data files) for the task.")
-    parser.add_argument("--log_dir",
-                        default=None,
-                        type=str,
-                        required=True,
-                        help="The log dir. Should contain the .txt file (or other data file) for the task.")
-    parser.add_argument("--bert_model", default=None, type=str, required=True,
-                        help="Bert pre-trained model selected in the list: bert-base-uncased, "
-                        "bert-large-uncased, bert-base-cased, bert-large-cased, bert-base-multilingual-uncased, "
-                        "bert-base-multilingual-cased, bert-base-chinese.")
+    # Required parameters
+    parser.add_argument(
+        "--data_dir",
+        default=None,
+        type=str,
+        required=True,
+        help="The input data dir. Should contain the .tsv files (or other data files) for the task."
+    )
+    parser.add_argument(
+        "--log_dir",
+        default=None,
+        type=str,
+        required=True,
+        help="The log dir. Should contain the .txt file (or other data file) for the task."
+    )
+    parser.add_argument(
+        "--bert_model",
+        default=None,
+        type=str,
+        required=True,
+        help="Bert pre-trained model selected in the list: bert-base-uncased, "
+        "bert-large-uncased, bert-base-cased, bert-large-cased, bert-base-multilingual-uncased, "
+        "bert-base-multilingual-cased, bert-base-chinese.")
     parser.add_argument("--task_name",
                         default=None,
                         type=str,
                         required=True,
                         help="The name of the task to train.")
-    parser.add_argument("--output_dir",
-                        default=None,
-                        type=str,
-                        required=True,
-                        help="The output directory where the model predictions and checkpoints will be written.")
+    parser.add_argument(
+        "--output_dir",
+        default=None,
+        type=str,
+        required=True,
+        help="The output directory where the model predictions and checkpoints will be written."
+    )
 
-    ## Other parameters
-    parser.add_argument("--cache_dir",
-                        default="",
-                        type=str,
-                        help="Where do you want to store the pre-trained models downloaded from s3")
-    parser.add_argument("--max_seq_length",
-                        default=128,
-                        type=int,
-                        help="The maximum total input sequence length after WordPiece tokenization. \n"
-                             "Sequences longer than this will be truncated, and sequences shorter \n"
-                             "than this will be padded.")
+    # Other parameters
+    parser.add_argument(
+        "--cache_dir",
+        default="",
+        type=str,
+        help="Where do you want to store the pre-trained models downloaded from s3")
+    parser.add_argument(
+        "--max_seq_length",
+        default=128,
+        type=int,
+        help="The maximum total input sequence length after WordPiece tokenization. \n"
+        "Sequences longer than this will be truncated, and sequences shorter \n"
+        "than this will be padded.")
     parser.add_argument("--do_train",
                         action='store_true',
                         help="Whether to run training.")
     parser.add_argument("--do_eval",
                         action='store_true',
                         help="Whether to run eval on the dev set.")
-    parser.add_argument("--do_lower_case",
-                        action='store_true',
-                        help="Set this flag if you are using an uncased model.")
+    parser.add_argument(
+        "--do_lower_case",
+        action='store_true',
+        help="Set this flag if you are using an uncased model.")
     parser.add_argument("--train_batch_size",
                         default=32,
                         type=int,
@@ -499,11 +543,12 @@ def main():
                         default=3.0,
                         type=float,
                         help="Total number of training epochs to perform.")
-    parser.add_argument("--warmup_proportion",
-                        default=0.1,
-                        type=float,
-                        help="Proportion of training to perform linear learning rate warmup for. "
-                             "E.g., 0.1 = 10%% of training.")
+    parser.add_argument(
+        "--warmup_proportion",
+        default=0.1,
+        type=float,
+        help="Proportion of training to perform linear learning rate warmup for. "
+        "E.g., 0.1 = 10%% of training.")
     parser.add_argument("--no_cuda",
                         action='store_true',
                         help="Whether not to use CUDA when available")
@@ -515,26 +560,38 @@ def main():
                         type=int,
                         default=42,
                         help="random seed for initialization")
-    parser.add_argument('--gradient_accumulation_steps',
-                        type=int,
-                        default=1,
-                        help="Number of updates steps to accumulate before performing a backward/update pass.")
-    parser.add_argument('--fp16',
-                        action='store_true',
-                        help="Whether to use 16-bit float precision instead of 32-bit")
-    parser.add_argument('--loss_scale',
-                        type=float, default=0,
-                        help="Loss scaling to improve fp16 numeric stability. Only used when fp16 set to True.\n"
-                             "0 (default value): dynamic loss scaling.\n"
-                             "Positive power of 2: static loss scaling value.\n")
-    parser.add_argument('--server_ip', type=str, default='', help="Can be used for distant debugging.")
-    parser.add_argument('--server_port', type=str, default='', help="Can be used for distant debugging.")
+    parser.add_argument(
+        '--gradient_accumulation_steps',
+        type=int,
+        default=1,
+        help="Number of updates steps to accumulate before performing a backward/update pass."
+    )
+    parser.add_argument(
+        '--fp16',
+        action='store_true',
+        help="Whether to use 16-bit float precision instead of 32-bit")
+    parser.add_argument(
+        '--loss_scale',
+        type=float,
+        default=0,
+        help="Loss scaling to improve fp16 numeric stability. Only used when fp16 set to True.\n"
+        "0 (default value): dynamic loss scaling.\n"
+        "Positive power of 2: static loss scaling value.\n")
+    parser.add_argument('--server_ip',
+                        type=str,
+                        default='',
+                        help="Can be used for distant debugging.")
+    parser.add_argument('--server_port',
+                        type=str,
+                        default='',
+                        help="Can be used for distant debugging.")
     args = parser.parse_args()
 
     # log setting
     handler = logging.FileHandler(os.path.join(args.log_dir, "log.txt"))
     handler.setFormatter(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s -   %(message)s')
+    formatter = logging.Formatter(
+        '%(asctime)s - %(levelname)s - %(name)s -   %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
@@ -542,7 +599,8 @@ def main():
         # Distant debugging - see https://code.visualstudio.com/docs/python/debugging#_attach-to-a-local-script
         import ptvsd
         print("Waiting for debugger attach")
-        ptvsd.enable_attach(address=(args.server_ip, args.server_port), redirect_output=True)
+        ptvsd.enable_attach(address=(args.server_ip, args.server_port),
+                            redirect_output=True)
         ptvsd.wait_for_attach()
 
     processors = {
@@ -555,7 +613,8 @@ def main():
     }
 
     if args.local_rank == -1 or args.no_cuda:
-        device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
+        device = torch.device("cuda" if torch.cuda.is_available()
+                              and not args.no_cuda else "cpu")
         n_gpu = torch.cuda.device_count()
     else:
         torch.cuda.set_device(args.local_rank)
@@ -563,12 +622,14 @@ def main():
         n_gpu = 1
         # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
         torch.distributed.init_process_group(backend='nccl')
-    logger.info("device: {} n_gpu: {}, distributed training: {}, 16-bits training: {}".format(
-        device, n_gpu, bool(args.local_rank != -1), args.fp16))
+    logger.info(
+        "device: {} n_gpu: {}, distributed training: {}, 16-bits training: {}".
+        format(device, n_gpu, bool(args.local_rank != -1), args.fp16))
 
     if args.gradient_accumulation_steps < 1:
-        raise ValueError("Invalid gradient_accumulation_steps parameter: {}, should be >= 1".format(
-                            args.gradient_accumulation_steps))
+        raise ValueError(
+            "Invalid gradient_accumulation_steps parameter: {}, should be >= 1"
+            .format(args.gradient_accumulation_steps))
 
     args.train_batch_size = args.train_batch_size // args.gradient_accumulation_steps
 
@@ -579,10 +640,14 @@ def main():
         torch.cuda.manual_seed_all(args.seed)
 
     if not args.do_train and not args.do_eval:
-        raise ValueError("At least one of `do_train` or `do_eval` must be True.")
+        raise ValueError(
+            "At least one of `do_train` or `do_eval` must be True.")
 
-    if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train:
-        raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
+    if os.path.exists(args.output_dir) and os.listdir(
+            args.output_dir) and args.do_train:
+        raise ValueError(
+            "Output directory ({}) already exists and is not empty.".format(
+                args.output_dir))
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
 
@@ -601,36 +666,43 @@ def main():
 
     num_labels = len(label_list)
 
-    tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
+    tokenizer = BertTokenizer.from_pretrained(args.bert_model,
+                                              do_lower_case=args.do_lower_case)
 
     train_examples = None
     num_train_optimization_steps = None
     if args.do_train:
         train_examples = processor.get_train_examples(args.data_dir)
         num_train_optimization_steps = int(
-            len(train_examples) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
+            len(train_examples) / args.train_batch_size /
+            args.gradient_accumulation_steps) * args.num_train_epochs
         if args.local_rank != -1:
-            num_train_optimization_steps = num_train_optimization_steps // torch.distributed.get_world_size()
+            num_train_optimization_steps = num_train_optimization_steps // torch.distributed.get_world_size(
+            )
 
     # Prepare model
-    cache_dir = args.cache_dir if args.cache_dir else os.path.join(str(PYTORCH_PRETRAINED_BERT_CACHE), 'distributed_{}'.format(args.local_rank))
+    cache_dir = args.cache_dir if args.cache_dir else os.path.join(
+        str(PYTORCH_PRETRAINED_BERT_CACHE), 'distributed_{}'.format(
+            args.local_rank))
     model = BertForTokenClassification.from_pretrained(args.bert_model,
-              cache_dir=cache_dir,
-              num_labels=num_labels)
+                                                       cache_dir=cache_dir,
+                                                       num_labels=num_labels)
     if args.fp16:
         model.half()
 
     try:
         model.to(device)
     except Exception:
-        
+
         logger.warning("toGPU failed, failed msg:" + traceback.format_exc())
-    
+
     if args.local_rank != -1:
         try:
             from apex.parallel import DistributedDataParallel as DDP
         except ImportError:
-            raise ImportError("Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training.")
+            raise ImportError(
+                "Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training."
+            )
 
         model = DDP(model)
     elif n_gpu > 1:
@@ -639,16 +711,25 @@ def main():
     # Prepare optimizer
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
-    optimizer_grouped_parameters = [
-        {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
-        {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
-        ]
+    optimizer_grouped_parameters = [{
+        'params':
+        [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
+        'weight_decay':
+        0.01
+    }, {
+        'params':
+        [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
+        'weight_decay':
+        0.0
+    }]
     if args.fp16:
         try:
             from apex.optimizers import FP16_Optimizer
             from apex.optimizers import FusedAdam
         except ImportError:
-            raise ImportError("Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training.")
+            raise ImportError(
+                "Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training."
+            )
 
         optimizer = FusedAdam(optimizer_grouped_parameters,
                               lr=args.learning_rate,
@@ -657,7 +738,8 @@ def main():
         if args.loss_scale == 0:
             optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=True)
         else:
-            optimizer = FP16_Optimizer(optimizer, static_loss_scale=args.loss_scale)
+            optimizer = FP16_Optimizer(optimizer,
+                                       static_loss_scale=args.loss_scale)
 
     else:
         optimizer = BertAdam(optimizer_grouped_parameters,
@@ -668,8 +750,8 @@ def main():
     global_step = 0
     nb_tr_steps = 0
     tr_loss = 0
-    #prepare Data
-    process_data(tokenizer, processor, args.data_dir, args.max_seq_length)
+    # prepare Data
+    train_label_ids, dev_label_ids, test_label_ids = process_data(tokenizer, processor, args.data_dir, args.max_seq_length)
     if args.do_train:
         logger.info("***** Running training *****")
         logger.info("  Num examples = %d", len(train_examples))
@@ -681,7 +763,9 @@ def main():
             train_sampler = RandomSampler(train_data)
         else:
             train_sampler = DistributedSampler(train_data)
-        train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
+        train_dataloader = DataLoader(train_data,
+                                      sampler=train_sampler,
+                                      batch_size=args.train_batch_size)
 
         model.train()
         for _ in range(int(args.num_train_epochs)):
@@ -696,7 +780,7 @@ def main():
                 loss = model(input_ids, segment_ids, input_mask, label_ids)
 
                 if n_gpu > 1:
-                    loss = loss.mean() # mean() to average on multi-gpu.
+                    loss = loss.mean()  # mean() to average on multi-gpu.
                 if args.gradient_accumulation_steps > 1:
                     loss = loss / args.gradient_accumulation_steps
 
@@ -712,7 +796,9 @@ def main():
                     if args.fp16:
                         # modify learning rate with special warm up BERT uses
                         # if args.fp16 is False, BertAdam is used that handles this automatically
-                        lr_this_step = args.learning_rate * warmup_linear(global_step/num_train_optimization_steps, args.warmup_proportion)
+                        lr_this_step = args.learning_rate * warmup_linear(
+                            global_step / num_train_optimization_steps,
+                            args.warmup_proportion)
                         for param_group in optimizer.param_groups:
                             param_group['lr'] = lr_this_step
                     optimizer.step()
@@ -726,9 +812,9 @@ def main():
                 #     print(abs(loss.item() - last_loss))
                 last_loss = loss.item()
 
-
         # Save a trained model and the associated configuration
-        model_to_save = model.module if hasattr(model, 'module') else model  # Only save the model it-self
+        model_to_save = model.module if hasattr(
+            model, 'module') else model  # Only save the model it-self
         output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
         torch.save(model_to_save.state_dict(), output_model_file)
         output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
@@ -740,17 +826,19 @@ def main():
         model = BertForTokenClassification(config, num_labels=num_labels)
         model.load_state_dict(torch.load(output_model_file))
     else:
-        model = BertForTokenClassification.from_pretrained(args.bert_model, num_labels=num_labels)
+        model = BertForTokenClassification.from_pretrained(
+            args.bert_model, num_labels=num_labels)
     model.to(device)
 
-    if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
-        #load fine-tuned model
+    if args.do_eval and (args.local_rank == -1
+                         or torch.distributed.get_rank() == 0):
+        # load fine-tuned model
         output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
         output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
         config = BertConfig(output_config_file)
         model = BertForTokenClassification(config, num_labels=num_labels)
         model.load_state_dict(torch.load(output_model_file))
-        model.to(device) 
+        model.to(device)
 
         eval_examples = processor.get_dev_examples(args.data_dir)
 
@@ -761,7 +849,9 @@ def main():
         eval_data = torch.load(os.path.join(args.data_dir, "dev.pt"))
         # Run prediction for full data
         eval_sampler = SequentialSampler(eval_data)
-        eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
+        eval_dataloader = DataLoader(eval_data,
+                                     sampler=eval_sampler,
+                                     batch_size=args.eval_batch_size)
 
         model.eval()
         eval_loss = 0
@@ -780,18 +870,20 @@ def main():
             # create eval loss and other metric required by the task
             if output_mode == "classification":
                 loss_fct = CrossEntropyLoss()
-                tmp_eval_loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
+                tmp_eval_loss = loss_fct(logits.view(-1, num_labels),
+                                         label_ids.view(-1))
             elif output_mode == "regression":
                 loss_fct = MSELoss()
                 tmp_eval_loss = loss_fct(logits.view(-1), label_ids.view(-1))
-            
+
             eval_loss += tmp_eval_loss.mean().item()
             nb_eval_steps += 1
             if len(preds) == 0:
                 preds.append(logits.detach().cpu().numpy())
             else:
-                preds[0] = np.append(
-                    preds[0], logits.detach().cpu().numpy(), axis=0)
+                preds[0] = np.append(preds[0],
+                                     logits.detach().cpu().numpy(),
+                                     axis=0)
 
         eval_loss = eval_loss / nb_eval_steps
         preds = preds[0]
@@ -799,8 +891,8 @@ def main():
             preds = np.argmax(preds, axis=1)
         elif output_mode == "regression":
             preds = np.squeeze(preds)
-        result = compute_metrics(task_name, preds, all_label_ids.numpy())
-        loss = tr_loss/nb_tr_steps if args.do_train else None
+        result = compute_metrics(task_name, preds, dev_label_ids.numpy())
+        loss = tr_loss / nb_tr_steps if args.do_train else None
 
         result['eval_loss'] = eval_loss
         result['global_step'] = global_step
@@ -818,26 +910,38 @@ def main():
             task_name = "mnli-mm"
             processor = processors[task_name]()
 
-            if os.path.exists(args.output_dir + '-MM') and os.listdir(args.output_dir + '-MM') and args.do_train:
-                raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
+            if os.path.exists(args.output_dir +
+                              '-MM') and os.listdir(args.output_dir +
+                                                    '-MM') and args.do_train:
+                raise ValueError(
+                    "Output directory ({}) already exists and is not empty.".
+                    format(args.output_dir))
             if not os.path.exists(args.output_dir + '-MM'):
                 os.makedirs(args.output_dir + '-MM')
 
             eval_examples = processor.get_dev_examples(args.data_dir)
             eval_features = convert_examples_to_features(
-                eval_examples, label_list, args.max_seq_length, tokenizer, output_mode)[0]
+                eval_examples, label_list, args.max_seq_length, tokenizer,
+                output_mode)[0]
             logger.info("***** Running evaluation *****")
             logger.info("  Num examples = %d", len(eval_examples))
             logger.info("  Batch size = %d", args.eval_batch_size)
-            all_input_ids = torch.tensor([f.input_ids for f in eval_features], dtype=torch.long)
-            all_input_mask = torch.tensor([f.input_mask for f in eval_features], dtype=torch.long)
-            all_segment_ids = torch.tensor([f.segment_ids for f in eval_features], dtype=torch.long)
-            all_label_ids = torch.tensor([f.label_id for f in eval_features], dtype=torch.long)
+            all_input_ids = torch.tensor([f.input_ids for f in eval_features],
+                                         dtype=torch.long)
+            all_input_mask = torch.tensor(
+                [f.input_mask for f in eval_features], dtype=torch.long)
+            all_segment_ids = torch.tensor(
+                [f.segment_ids for f in eval_features], dtype=torch.long)
+            all_label_ids = torch.tensor([f.label_id for f in eval_features],
+                                         dtype=torch.long)
 
-            eval_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
+            eval_data = TensorDataset(all_input_ids, all_input_mask,
+                                      all_segment_ids, all_label_ids)
             # Run prediction for full data
             eval_sampler = SequentialSampler(eval_data)
-            eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
+            eval_dataloader = DataLoader(eval_data,
+                                         sampler=eval_sampler,
+                                         batch_size=args.eval_batch_size)
 
             model.eval()
             eval_loss = 0
@@ -851,35 +955,42 @@ def main():
                 label_ids = label_ids.to(device)
 
                 with torch.no_grad():
-                    logits = model(input_ids, segment_ids, input_mask, labels=None)
-            
+                    logits = model(input_ids,
+                                   segment_ids,
+                                   input_mask,
+                                   labels=None)
+
                 loss_fct = CrossEntropyLoss()
-                tmp_eval_loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
-            
+                tmp_eval_loss = loss_fct(logits.view(-1, num_labels),
+                                         label_ids.view(-1))
+
                 eval_loss += tmp_eval_loss.mean().item()
                 nb_eval_steps += 1
                 if len(preds) == 0:
                     preds.append(logits.detach().cpu().numpy())
                 else:
-                    preds[0] = np.append(
-                        preds[0], logits.detach().cpu().numpy(), axis=0)
+                    preds[0] = np.append(preds[0],
+                                         logits.detach().cpu().numpy(),
+                                         axis=0)
 
             eval_loss = eval_loss / nb_eval_steps
             preds = preds[0]
             preds = np.argmax(preds, axis=1)
             result = compute_metrics(task_name, preds, all_label_ids.numpy())
-            loss = tr_loss/nb_tr_steps if args.do_train else None
+            loss = tr_loss / nb_tr_steps if args.do_train else None
 
             result['eval_loss'] = eval_loss
             result['global_step'] = global_step
             result['loss'] = loss
 
-            output_eval_file = os.path.join(args.output_dir + '-MM', "eval_results.txt")
+            output_eval_file = os.path.join(args.output_dir + '-MM',
+                                            "eval_results.txt")
             with open(output_eval_file, "w") as writer:
                 logger.info("***** Eval results *****")
                 for key in sorted(result.keys()):
                     logger.info("  %s = %s", key, str(result[key]))
                     writer.write("%s = %s\n" % (key, str(result[key])))
+
 
 if __name__ == "__main__":
     main()
