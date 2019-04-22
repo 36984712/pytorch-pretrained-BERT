@@ -22,3 +22,15 @@
 04/21/2019 13:46:38 - INFO - __main__ -     Num examples = 23925
 04/21/2019 13:46:38 - INFO - __main__ -     Batch size = 32
 04/21/2019 13:46:38 - INFO - __main__ -     Num steps = 149400
+/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/parallel/_functions.py:61: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+04/21/2019 23:43:56 - INFO - __main__ -   ***** Running evaluation *****
+04/21/2019 23:43:56 - INFO - __main__ -     Num examples = 2031
+04/21/2019 23:43:56 - INFO - __main__ -     Batch size = 8
+/flush3/hli001/installs/pytorch/pytorch-1.0.0-git/aten/src/THCUNN/ClassNLLCriterion.cu:105: void cunn_ClassNLLCriterion_updateOutput_kernel(Dtype *, Dtype *, Dtype *, long *, Dtype *, int, int, int, int, long) [with Dtype = float, Acctype = float]: block: [0,0,0], thread: [14,0,0] Assertion `t >= 0 && t < n_classes` failed.
+Traceback (most recent call last):
+  File "../run_bbn.py", line 885, in <module>
+    main()
+  File "../run_bbn.py", line 788, in main
+    eval_loss += tmp_eval_loss.mean().item()
+RuntimeError: CUDA error: device-side assert triggered

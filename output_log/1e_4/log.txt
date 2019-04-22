@@ -21,3 +21,6 @@ RuntimeError: CUDA error: out of memory
 2019-04-21 13:46:38,389 - INFO - __main__ -     Num examples = 23925
 2019-04-21 13:46:38,390 - INFO - __main__ -     Batch size = 32
 2019-04-21 13:46:38,390 - INFO - __main__ -     Num steps = 149400
+2019-04-21 23:43:56,702 - INFO - __main__ -   ***** Running evaluation *****
+2019-04-21 23:43:56,703 - INFO - __main__ -     Num examples = 2031
+2019-04-21 23:43:56,703 - INFO - __main__ -     Batch size = 8
