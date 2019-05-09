@@ -1,0 +1,55 @@
+04/23/2019 04:24:13 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
+04/23/2019 04:24:16 - INFO - pytorch_pretrained_bert.tokenization -   loading vocabulary file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-vocab.txt from cache at /home/wen062/.pytorch_pretrained_bert/26bc1ad6c0ac742e9b52263248f6d0f00068293b33709fae12320c0e35ccfbbb.542ce4285a40d23a559526243235df47c5f75c197f04f37d1a0c124c32c9a084
+04/23/2019 04:24:17 - INFO - pytorch_pretrained_bert.modeling -   loading archive file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased.tar.gz from cache at /home/wen062/.pytorch_pretrained_bert/distributed_-1/9c41111e2de84547a463fd39217199738d1e3deb72d4fec4399e6e241983c6f0.ae3cef932725ca7a30cdcb93fc6e09150a55e2a130ec7af63975a16c153ae2ba
+04/23/2019 04:24:17 - INFO - pytorch_pretrained_bert.modeling -   extracting archive file /home/wen062/.pytorch_pretrained_bert/distributed_-1/9c41111e2de84547a463fd39217199738d1e3deb72d4fec4399e6e241983c6f0.ae3cef932725ca7a30cdcb93fc6e09150a55e2a130ec7af63975a16c153ae2ba to temp dir /tmp/wen062.23738914/tmpsp54aaz5
+04/23/2019 04:24:20 - INFO - pytorch_pretrained_bert.modeling -   Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "type_vocab_size": 2,
+  "vocab_size": 30522
+}
+
+04/23/2019 04:24:23 - INFO - pytorch_pretrained_bert.modeling -   Weights of BertForTokenClassification not initialized from pretrained model: ['classifier.weight', 'classifier.bias']
+04/23/2019 04:24:23 - INFO - pytorch_pretrained_bert.modeling -   Weights from pretrained model not used in BertForTokenClassification: ['cls.predictions.bias', 'cls.predictions.transform.dense.weight', 'cls.predictions.transform.dense.bias', 'cls.predictions.decoder.weight', 'cls.seq_relationship.weight', 'cls.seq_relationship.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.LayerNorm.bias']
+04/23/2019 04:24:51 - INFO - pytorch_pretrained_bert.modeling -   loading archive file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased.tar.gz from cache at /home/wen062/.pytorch_pretrained_bert/9c41111e2de84547a463fd39217199738d1e3deb72d4fec4399e6e241983c6f0.ae3cef932725ca7a30cdcb93fc6e09150a55e2a130ec7af63975a16c153ae2ba
+04/23/2019 04:24:51 - INFO - pytorch_pretrained_bert.modeling -   extracting archive file /home/wen062/.pytorch_pretrained_bert/9c41111e2de84547a463fd39217199738d1e3deb72d4fec4399e6e241983c6f0.ae3cef932725ca7a30cdcb93fc6e09150a55e2a130ec7af63975a16c153ae2ba to temp dir /tmp/wen062.23738914/tmp7luyjrxo
+04/23/2019 04:24:54 - INFO - pytorch_pretrained_bert.modeling -   Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "type_vocab_size": 2,
+  "vocab_size": 30522
+}
+
+04/23/2019 04:24:57 - INFO - pytorch_pretrained_bert.modeling -   Weights of BertForTokenClassification not initialized from pretrained model: ['classifier.weight', 'classifier.bias']
+04/23/2019 04:24:57 - INFO - pytorch_pretrained_bert.modeling -   Weights from pretrained model not used in BertForTokenClassification: ['cls.predictions.bias', 'cls.predictions.transform.dense.weight', 'cls.predictions.transform.dense.bias', 'cls.predictions.decoder.weight', 'cls.seq_relationship.weight', 'cls.seq_relationship.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.LayerNorm.bias']
+04/23/2019 04:24:59 - INFO - __main__ -   ***** Running evaluation *****
+04/23/2019 04:24:59 - INFO - __main__ -     Num examples = 2031
+04/23/2019 04:24:59 - INFO - __main__ -     Batch size = 8
+../run_bbn.py:366: DeprecationWarning: elementwise == comparison failed; this will raise an error in the future.
+  return (preds == labels).mean()
+Traceback (most recent call last):
+  File "../run_bbn.py", line 996, in <module>
+    main()
+  File "../run_bbn.py", line 894, in main
+    result = compute_metrics(task_name, preds, dev_label_ids.numpy())
+  File "../run_bbn.py", line 393, in compute_metrics
+    return acc_and_f1(preds, labels)
+  File "../run_bbn.py", line 370, in acc_and_f1
+    acc = simple_accuracy(preds, labels)
+  File "../run_bbn.py", line 366, in simple_accuracy
+    return (preds == labels).mean()
+AttributeError: 'bool' object has no attribute 'mean'

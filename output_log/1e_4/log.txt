@@ -27,3 +27,25 @@ RuntimeError: CUDA error: out of memory
 2019-04-23 00:14:32,682 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
 2019-04-23 00:18:18,404 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
 2019-04-23 00:19:35,526 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-04-23 00:27:42,533 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
+2019-04-23 00:27:52,427 - WARNING - __main__ -   toGPU failed, failed msg:Traceback (most recent call last):
+  File "../run_bbn.py", line 694, in main
+    model.to(device)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 381, in to
+    return self._apply(convert)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 187, in _apply
+    module._apply(fn)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 187, in _apply
+    module._apply(fn)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 187, in _apply
+    module._apply(fn)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 193, in _apply
+    param.data = fn(param.data)
+  File "/apps/pytorch/1.0.0-py37-cuda92/lib/python3.7/site-packages/torch/nn/modules/module.py", line 379, in convert
+    return t.to(device, dtype if t.is_floating_point() else None, non_blocking)
+RuntimeError: CUDA error: out of memory
+
+2019-04-23 04:24:13,987 - INFO - __main__ -   device: cuda n_gpu: 4, distributed training: False, 16-bits training: False
+2019-04-23 04:24:59,989 - INFO - __main__ -   ***** Running evaluation *****
+2019-04-23 04:24:59,989 - INFO - __main__ -     Num examples = 2031
+2019-04-23 04:24:59,990 - INFO - __main__ -     Batch size = 8
