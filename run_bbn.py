@@ -876,6 +876,7 @@ def main():
                 # print(logits)
                 # print(label_ids)
                 # print(logits.shape)
+                print(torch.max(logits))
                 tmp_eval_loss = loss_fct(logits.view(-1, num_labels),
                                          active_labels.view(-1))
             elif output_mode == "regression":
