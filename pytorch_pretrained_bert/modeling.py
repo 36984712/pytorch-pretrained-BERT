@@ -31,6 +31,7 @@ from io import open
 import torch
 from torch import nn
 from torch.nn import CrossEntropyLoss
+import torch.nn.functional as F
 
 from .file_utils import cached_path
 
@@ -1235,6 +1236,7 @@ class BertForTokenClassification(BertPreTrainedModel):
                                        output_all_encoded_layers=False)
         sequence_output = self.dropout(sequence_output)
         logits = self.classifier(sequence_output)
+        logits = F.relu(logits)
         # print(logits.view(-1, self.num_labels))
 
         if labels is not None:

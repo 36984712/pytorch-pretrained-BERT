@@ -1,0 +1,10 @@
+2019-05-10 08:22:50,721 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-05-10 08:23:21,465 - INFO - __main__ -   preparing model
+2019-05-10 08:23:30,852 - INFO - __main__ -   ***** Running evaluation *****
+2019-05-10 08:23:30,853 - INFO - __main__ -     Num examples = 2031
+2019-05-10 08:23:30,854 - INFO - __main__ -     Batch size = 8
+2019-05-10 09:32:33,505 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-05-10 09:33:02,610 - INFO - __main__ -   preparing model
+2019-05-10 09:33:11,553 - INFO - __main__ -   ***** Running evaluation *****
+2019-05-10 09:33:11,554 - INFO - __main__ -     Num examples = 2031
+2019-05-10 09:33:11,555 - INFO - __main__ -     Batch size = 8
