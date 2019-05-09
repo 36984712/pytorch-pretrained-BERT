@@ -1250,7 +1250,13 @@ class BertForTokenClassification(BertPreTrainedModel):
                                 labels.view(-1))
             return loss
         else:
-            return logits
+            if attention_mask is not None:
+                active_loss = attention_mask.view(-1) == 1
+                active_logits = logits.view(-1, self.num_labels)[active_loss]
+                # active_labels = labels.view(-1)[active_loss]
+                return active_logits, active_loss
+            else:
+                return logits
 
 
 class BertForQuestionAnswering(BertPreTrainedModel):

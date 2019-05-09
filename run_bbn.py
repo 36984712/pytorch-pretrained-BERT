@@ -368,7 +368,7 @@ def simple_accuracy(preds, labels):
 
 def acc_and_f1(preds, labels):
     acc = simple_accuracy(preds, labels)
-    f1 = f1_score(y_true=labels, y_pred=preds)
+    f1 = f1_score(y_true=labels, y_pred=preds, average='weighted')
     return {
         "acc": acc,
         "f1": f1,
@@ -751,7 +751,7 @@ def main():
     nb_tr_steps = 0
     tr_loss = 0
     # prepare Data
-    train_label_ids, dev_label_ids, test_label_ids = process_data(tokenizer, processor, args.data_dir, args.max_seq_length)
+    # train_label_ids, dev_label_ids, test_label_ids = process_data(tokenizer, processor, args.data_dir, args.max_seq_length)
     if args.do_train:
         logger.info("***** Running training *****")
         logger.info("  Num examples = %d", len(train_examples))
@@ -826,6 +826,7 @@ def main():
         model = BertForTokenClassification(config, num_labels=num_labels)
         model.load_state_dict(torch.load(output_model_file))
     else:
+        logger.info("preparing model")
         model = BertForTokenClassification.from_pretrained(
             args.bert_model, num_labels=num_labels)
     model.to(device)
@@ -833,12 +834,12 @@ def main():
     if args.do_eval and (args.local_rank == -1
                          or torch.distributed.get_rank() == 0):
         # load fine-tuned model
-        output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
-        output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
-        config = BertConfig(output_config_file)
-        model = BertForTokenClassification(config, num_labels=num_labels)
-        model.load_state_dict(torch.load(output_model_file))
-        model.to(device)
+        # output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
+        # output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
+        # config = BertConfig(output_config_file)
+        # model = BertForTokenClassification(config, num_labels=num_labels)
+        # model.load_state_dict(torch.load(output_model_file))
+        # model.to(device)
 
         eval_examples = processor.get_dev_examples(args.data_dir)
 
@@ -857,6 +858,7 @@ def main():
         eval_loss = 0
         nb_eval_steps = 0
         preds = []
+        active_labels_dataset = []
 
         for input_ids, input_mask, segment_ids, label_ids in eval_dataloader:
             input_ids = input_ids.to(device)
@@ -865,33 +867,50 @@ def main():
             label_ids = label_ids.to(device)
 
             with torch.no_grad():
-                logits = model(input_ids, segment_ids, input_mask, labels=None)
+                logits, active_loss = model(input_ids, segment_ids, input_mask, labels=None)
+                active_labels = label_ids.view(-1)[active_loss]
 
             # create eval loss and other metric required by the task
             if output_mode == "classification":
                 loss_fct = CrossEntropyLoss()
+                # print(logits)
+                # print(label_ids)
+                # print(logits.shape)
                 tmp_eval_loss = loss_fct(logits.view(-1, num_labels),
-                                         label_ids.view(-1))
+                                         active_labels.view(-1))
             elif output_mode == "regression":
                 loss_fct = MSELoss()
-                tmp_eval_loss = loss_fct(logits.view(-1), label_ids.view(-1))
+                tmp_eval_loss = loss_fct(logits.view(-1), active_labels.view(-1))
 
             eval_loss += tmp_eval_loss.mean().item()
             nb_eval_steps += 1
-            if len(preds) == 0:
-                preds.append(logits.detach().cpu().numpy())
-            else:
-                preds[0] = np.append(preds[0],
-                                     logits.detach().cpu().numpy(),
-                                     axis=0)
+            # if len(preds) == 0:
+            #     preds.append(logits.detach().cpu().numpy())
+            # else:
+            #     preds[0] = np.append(preds[0],
+            #                          logits.detach().cpu().numpy(),
+            #                          axis=0)
+            logits = np.argmax(logits.detach().cpu().numpy(), axis=1)
+            preds.append(logits)
+            active_labels_dataset.append(active_labels)
 
         eval_loss = eval_loss / nb_eval_steps
-        preds = preds[0]
-        if output_mode == "classification":
-            preds = np.argmax(preds, axis=1)
-        elif output_mode == "regression":
-            preds = np.squeeze(preds)
-        result = compute_metrics(task_name, preds, dev_label_ids.numpy())
+        # preds = preds[0]
+        preds_flat = []
+        labels_flat = []
+        for s in preds:
+            for l in s:  # l is label
+                preds_flat.append(l)
+        for s in active_labels_dataset.detach().cpu().numpy():
+            for l in s:
+                labels_flat.append(l)
+        preds_flat = np.array(preds_flat)
+        labels_flat = np.array(labels_flat)
+        # if output_mode == "classification":
+        #     preds = np.argmax(preds, axis=2)
+        # elif output_mode == "regression":
+        #     preds = np.squeeze(preds)
+        result = compute_metrics(task_name, preds_flat, labels_flat)
         loss = tr_loss / nb_tr_steps if args.do_train else None
 
         result['eval_loss'] = eval_loss

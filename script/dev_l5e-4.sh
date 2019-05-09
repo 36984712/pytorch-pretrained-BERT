@@ -19,4 +19,5 @@ python3 ../run_bbn.py --data_dir ../BBN \
 --max_seq_length 128 \
 --num_train_epochs 50 \
 --do_eval \
---learning_rate 5e-4
+--learning_rate 5e-4 \
+--no_cuda
