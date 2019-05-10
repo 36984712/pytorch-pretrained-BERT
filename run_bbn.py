@@ -834,12 +834,12 @@ def main():
     if args.do_eval and (args.local_rank == -1
                          or torch.distributed.get_rank() == 0):
         # load fine-tuned model
-        # output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
-        # output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
-        # config = BertConfig(output_config_file)
-        # model = BertForTokenClassification(config, num_labels=num_labels)
-        # model.load_state_dict(torch.load(output_model_file))
-        # model.to(device)
+        output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
+        output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
+        config = BertConfig(output_config_file)
+        model = BertForTokenClassification(config, num_labels=num_labels)
+        model.load_state_dict(torch.load(output_model_file))
+        model.to(device)
 
         eval_examples = processor.get_dev_examples(args.data_dir)
 
