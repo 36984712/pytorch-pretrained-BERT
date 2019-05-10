@@ -880,7 +880,8 @@ def main():
                 loss_fct = MSELoss()
                 tmp_eval_loss = loss_fct(logits.view(-1), active_labels.view(-1))
 
-            eval_loss += tmp_eval_loss.mean().item()
+            # eval_loss += tmp_eval_loss.mean().item()
+            eval_loss += 0
             nb_eval_steps += 1
             # if len(preds) == 0:
             #     preds.append(logits.detach().cpu().numpy())
