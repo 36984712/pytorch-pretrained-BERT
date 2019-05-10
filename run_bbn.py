@@ -900,9 +900,9 @@ def main():
         for s in preds:
             for l in s:  # l is label
                 preds_flat.append(l)
-        for s in active_labels_dataset.detach().cpu().numpy():
+        for s in active_labels_dataset:
             for l in s:
-                labels_flat.append(l)
+                labels_flat.append(l.detach().cpu().numpy())
         preds_flat = np.array(preds_flat)
         labels_flat = np.array(labels_flat)
         # if output_mode == "classification":
