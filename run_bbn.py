@@ -873,13 +873,9 @@ def main():
             # create eval loss and other metric required by the task
             if output_mode == "classification":
                 loss_fct = CrossEntropyLoss()
-                # print(logits)
-                print(active_labels.view(-1).shape)
-                print(logits.view(-1, num_labels).shape)
-                print(torch.max(logits))
-                print(torch.min(logits))
-                tmp_eval_loss = loss_fct(logits.view(-1, num_labels),
-                                         active_labels.view(-1))
+                # tmp_eval_loss = loss_fct(logits.view(-1, num_labels),
+                #                          active_labels.view(-1))
+                tmp_eval_loss = 0
             elif output_mode == "regression":
                 loss_fct = MSELoss()
                 tmp_eval_loss = loss_fct(logits.view(-1), active_labels.view(-1))
