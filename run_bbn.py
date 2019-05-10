@@ -874,8 +874,8 @@ def main():
             if output_mode == "classification":
                 loss_fct = CrossEntropyLoss()
                 # print(logits)
-                # print(label_ids)
-                # print(logits.shape)
+                print(active_labels.view(-1).shape)
+                print(logits.view(-1, num_labels).shape)
                 print(torch.max(logits))
                 print(torch.min(logits))
                 tmp_eval_loss = loss_fct(logits.view(-1, num_labels),
