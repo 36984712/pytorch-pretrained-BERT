@@ -914,7 +914,7 @@ def main():
         label_map = dict()
         for i in range(len(preds_flat)):
             key = str(preds[i]) + '-' + str(labels_flat[i])
-            if key in label_map.keys:
+            if key in label_map.keys():
                 label_map[key] += 1
             else:
                 label_map[key] = 0
