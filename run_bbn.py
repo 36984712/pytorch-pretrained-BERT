@@ -918,7 +918,9 @@ def main():
                 label_map[key] += 1
             else:
                 label_map[key] = 0
-        print(label_map)
+        for k in label_map.keys():
+            if label_map[k] > 100:
+                print(k, ":", label_map[k])
         # if output_mode == "classification":
         #     preds = np.argmax(preds, axis=2)
         # elif output_mode == "regression":
