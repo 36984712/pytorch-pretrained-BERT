@@ -13,3 +13,6 @@
 2019-05-10 09:56:50,799 - INFO - __main__ -   ***** Running evaluation *****
 2019-05-10 09:56:50,800 - INFO - __main__ -     Num examples = 2031
 2019-05-10 09:56:50,800 - INFO - __main__ -     Batch size = 8
+2019-05-11 10:50:04,845 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-05-11 10:53:03,582 - INFO - __main__ -   device: cpu n_gpu: 0, distributed training: False, 16-bits training: False
+2019-05-11 10:53:34,784 - INFO - __main__ -   preparing model

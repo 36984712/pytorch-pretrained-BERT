@@ -846,13 +846,13 @@ def main():
         model.eval()
 
         # eval_examples = processor.get_dev_examples(args.data_dir)
-        eval_examples = processor.get_train_examples(args.data_dir)
+        eval_examples = processor.get_dev_examples(args.data_dir)
 
         logger.info("***** Running evaluation *****")
         logger.info("  Num examples = %d", len(eval_examples))
         logger.info("  Batch size = %d", args.eval_batch_size)
 
-        eval_data = torch.load(os.path.join(args.data_dir, "train.pt"))
+        eval_data = torch.load(os.path.join(args.data_dir, "dev.pt"))
         # Run prediction for full data
         eval_sampler = SequentialSampler(eval_data)
         eval_dataloader = DataLoader(eval_data,
@@ -875,9 +875,6 @@ def main():
             with torch.no_grad():
                 logits, active_loss = model(input_ids, segment_ids, input_mask, labels=None)
                 active_labels = label_ids.view(-1)[active_loss]
-                if i == 10:
-                    print(np.argmax(logits.detach().cpu().numpy(), axis=1))
-                    print(active_labels)
 
             # create eval loss and other metric required by the task
             if output_mode == "classification":
@@ -914,6 +911,14 @@ def main():
                 labels_flat.append(l.detach().cpu().numpy())
         preds_flat = np.array(preds_flat)
         labels_flat = np.array(labels_flat)
+        label_map = dict()
+        for i in range(len(preds_flat)):
+            key = str(preds[i]) + '-' + str(labels_flat[i])
+            if key in label_map.keys:
+                label_map[key] += 1
+            else:
+                label_map[key] = 0
+        print(label_map)
         # if output_mode == "classification":
         #     preds = np.argmax(preds, axis=2)
         # elif output_mode == "regression":
