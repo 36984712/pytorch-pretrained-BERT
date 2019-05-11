@@ -851,7 +851,7 @@ def main():
         logger.info("  Num examples = %d", len(eval_examples))
         logger.info("  Batch size = %d", args.eval_batch_size)
 
-        eval_data = torch.load(os.path.join(args.data_dir, "dev.pt"))
+        eval_data = torch.load(os.path.join(args.data_dir, "train.pt"))
         # Run prediction for full data
         eval_sampler = SequentialSampler(eval_data)
         eval_dataloader = DataLoader(eval_data,
