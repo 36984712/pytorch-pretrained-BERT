@@ -911,16 +911,34 @@ def main():
                 labels_flat.append(l.detach().cpu().numpy())
         preds_flat = np.array(preds_flat)
         labels_flat = np.array(labels_flat)
-        label_map = dict()
+
         for i in range(len(preds_flat)):
-            key = str(preds_flat[i]) + '-' + str(labels_flat[i])
-            if key in label_map.keys():
-                label_map[key] += 1
-            else:
-                label_map[key] = 0
-        for k in label_map.keys():
-            if label_map[k] > 1000:
-                print(k, ":", label_map[k])
+            if preds_flat[i] == 37:
+                preds_flat = 7
+            elif preds_flat[i] == 34:
+                preds_flat == 12
+            elif preds_flat[i] == 26:
+                preds_flat = 36
+            elif preds_flat[i] == 36:
+                preds_flat = 37
+            elif preds_flat[i] == 41:
+                preds_flat = 34
+            elif preds_flat[i] == 31:
+                preds_flat = 39
+            elif preds_flat[i] == 15:
+                preds_flat = 38
+
+        # label_map = dict()
+        # for i in range(len(preds_flat)):
+        #     key = str(preds_flat[i]) + '-' + str(labels_flat[i])
+        #     if key in label_map.keys():
+        #         label_map[key] += 1
+        #     else:
+        #         label_map[key] = 0
+        # for k in label_map.keys():
+        #     if label_map[k] > 1000:
+        #         print(k, ":", label_map[k])
+
         # if output_mode == "classification":
         #     preds = np.argmax(preds, axis=2)
         # elif output_mode == "regression":
