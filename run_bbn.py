@@ -914,19 +914,19 @@ def main():
 
         for i in range(len(preds_flat)):
             if preds_flat[i] == 37:
-                preds_flat = 7
+                preds_flat[i] = 7
             elif preds_flat[i] == 34:
-                preds_flat == 12
+                preds_flat[i] == 12
             elif preds_flat[i] == 26:
-                preds_flat = 36
+                preds_flat[i] = 36
             elif preds_flat[i] == 36:
-                preds_flat = 37
+                preds_flat[i] = 37
             elif preds_flat[i] == 41:
-                preds_flat = 34
+                preds_flat[i] = 34
             elif preds_flat[i] == 31:
-                preds_flat = 39
+                preds_flat[i] = 39
             elif preds_flat[i] == 15:
-                preds_flat = 38
+                preds_flat[i] = 38
 
         # label_map = dict()
         # for i in range(len(preds_flat)):
