@@ -833,11 +833,6 @@ def main():
         output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
         config = BertConfig(output_config_file)
         model = BertForTokenClassification(config, num_labels=num_labels)
-
-        print("Model's state_dict:")
-        for param_tensor in model.state_dict():
-            print(param_tensor, "\t", model.state_dict()[param_tensor].size())
-
         model.load_state_dict(torch.load(output_model_file))
 
         print("Model's state_dict:")
@@ -848,6 +843,7 @@ def main():
 
     if args.do_eval and (args.local_rank == -1
                          or torch.distributed.get_rank() == 0):
+        model.eval()
 
         eval_examples = processor.get_dev_examples(args.data_dir)
 
