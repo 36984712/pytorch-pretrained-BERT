@@ -919,7 +919,7 @@ def main():
             else:
                 label_map[key] = 0
         for k in label_map.keys():
-            if label_map[k] > 100:
+            if label_map[k] > 1000:
                 print(k, ":", label_map[k])
         # if output_mode == "classification":
         #     preds = np.argmax(preds, axis=2)
