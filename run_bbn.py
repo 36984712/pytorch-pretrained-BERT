@@ -827,19 +827,27 @@ def main():
         model.load_state_dict(torch.load(output_model_file))
     else:
         logger.info("preparing model")
-        model = BertForTokenClassification.from_pretrained(
-            args.bert_model, num_labels=num_labels)
-    model.to(device)
-
-    if args.do_eval and (args.local_rank == -1
-                         or torch.distributed.get_rank() == 0):
-        # load fine-tuned model
+        # model = BertForTokenClassification.from_pretrained(
+        #     args.bert_model, num_labels=num_labels)
         output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
         output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
         config = BertConfig(output_config_file)
         model = BertForTokenClassification(config, num_labels=num_labels)
+
+        print("Model's state_dict:")
+        for param_tensor in model.state_dict():
+            print(param_tensor, "\t", model.state_dict()[param_tensor].size())
+
         model.load_state_dict(torch.load(output_model_file))
-        model.to(device)
+
+        print("Model's state_dict:")
+        for param_tensor in model.state_dict():
+            print(param_tensor, "\t", model.state_dict()[param_tensor].size())
+    
+    model.to(device)
+
+    if args.do_eval and (args.local_rank == -1
+                         or torch.distributed.get_rank() == 0):
 
         eval_examples = processor.get_dev_examples(args.data_dir)
 
