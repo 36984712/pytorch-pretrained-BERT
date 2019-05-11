@@ -845,7 +845,8 @@ def main():
                          or torch.distributed.get_rank() == 0):
         model.eval()
 
-        eval_examples = processor.get_dev_examples(args.data_dir)
+        # eval_examples = processor.get_dev_examples(args.data_dir)
+        eval_examples = processor.get_train_examples(args.data_dir)
 
         logger.info("***** Running evaluation *****")
         logger.info("  Num examples = %d", len(eval_examples))
@@ -864,6 +865,7 @@ def main():
         preds = []
         active_labels_dataset = []
 
+        i = 0
         for input_ids, input_mask, segment_ids, label_ids in eval_dataloader:
             input_ids = input_ids.to(device)
             input_mask = input_mask.to(device)
@@ -873,6 +875,9 @@ def main():
             with torch.no_grad():
                 logits, active_loss = model(input_ids, segment_ids, input_mask, labels=None)
                 active_labels = label_ids.view(-1)[active_loss]
+                if i == 10:
+                    print(np.argmax(logits.detach().cpu().numpy(), axis=1))
+                    print(active_labels)
 
             # create eval loss and other metric required by the task
             if output_mode == "classification":
