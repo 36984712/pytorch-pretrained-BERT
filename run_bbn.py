@@ -913,7 +913,7 @@ def main():
         labels_flat = np.array(labels_flat)
         label_map = dict()
         for i in range(len(preds_flat)):
-            key = str(preds[i]) + '-' + str(labels_flat[i])
+            key = str(preds_flat[i]) + '-' + str(labels_flat[i])
             if key in label_map.keys():
                 label_map[key] += 1
             else:
